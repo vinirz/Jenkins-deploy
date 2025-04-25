@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    stages {
+        stage('1 - Alterar o .env da aplicação') {
+            steps {
+                script {
+                    sh 'cp .env_prod .env'
+                }
+            }
+        }
+
+        stage('2 - Buildar a imagem Docker') {
+            steps {
+                script {
+                    docker.build('nextjs-app')
+                }
+            }
+        }
+        
+        stage('3 - Rodar a aplicação') {
+            steps {
+                script {
+                    sh 'docker rm -f nextjs-container || true'
+                    sh 'docker run -d -p 3000:3000 --name nextjs-container nextjs-app'
+                }
+            }
+        }
+    }
+}
